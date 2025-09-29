@@ -14,7 +14,7 @@ class Productos(models.Model):
     ]
 
     nombre = models.CharField(max_length=100)
-    codigo = models.CharField(max_legth=50, unique=True)
+    codigo = models.CharField(max_length=50, unique=True)
     descripcion = models.TextField(max_length=500)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField(default=0)
