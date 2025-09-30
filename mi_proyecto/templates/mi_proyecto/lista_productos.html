@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
+
+<!-- formulario para la busqueda-->
+    <form method="get">
+        <input type="text" name="busqueda" placeholder="Buscar producto o codigo" value="{{ request.GET.busqueda }}">
+        <select name="categoria">
+            <option value="">Todas las categorias</option>
+            {% for codigo, nombre in categorias %}
+                <option value="{{ codigo }}"> {% if request.GET.cateogoria == codigo %} selected {% endif %} {{ nombre }}
+                </option>
+            {% endfor %}     
+        </select>
+        <button type="submit">Buscar</button>
+</form>
+
+<!-- Lista de productos -->
+ <table border="1">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Codigo</th>
+            <th>Categoria</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Proveedor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.codigo }}</td>
+                <td>{{ producto.categoria }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>{{ producto.proveedor }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay productos registrados</td>       
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">No hay productos registrados</td>
+            </tr>
+    </tbody>
+ </table>
+</body>
+</html>
