@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Producto</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Producto: {{ producto.nombre }}</h1>
+        
+        {% if messages %}
+            <ul>
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <!-- Mensajes de error -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Formulario -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_nombre">Nombre:</label>
+                {{ form.nombre }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_codigo">Código (Serial):</label>
+                {{ form.codigo }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_descripcion">Descripción:</label>
+                {{ form.descripcion }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_precio">Precio:</label>
+                    {{ form.precio }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_stock">Stock:</label>
+                    {{ form.stock }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_categoria">Categoría:</label>
+                    {{ form.categoria }}
+                </div>
+                <div class="form-group">
+                    <label for="id_proveedor">Proveedor:</label>
+                    {{ form.proveedor }}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{% url 'lista_productos' %}" class="btn">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html

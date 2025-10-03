@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if modo_multiple %}Crear Múltiples Productos{% else %}{% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto{% endif %}</title>
+</head>
+<body>
+    <div class="main-container">
+        <nav class="sidebar">
+            <!-- Tu menú lateral existente -->
+        </nav>
+
+        <main class="content">
+            <div class="header">
+                <h1>
+                    {% if modo_multiple %}
+                        Crear Múltiples Productos
+                    {% else %}
+                        {% if form.instance.id %}Editar{% else %}Crear{% endif %} Producto
+                    {% endif %}
+                </h1>
+            </div>
+
+            <div class="form-container">
+                {% if messages %}
+                    <ul>
+                        {% for m in messages %}
+                            <li>{{ m }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if form.errors or formset and formset.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div>{{ field.label }}: {{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% if formset %}
+                            {% for f in formset %}
+                                {{ f.non_field_errors }}
+                                {% for field in f %}
+                                    {% for error in field.errors %}
+                                        <div>{{ field.label }}: {{ error }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if not modo_multiple %}
+                <!-- Modo creación simple -->
+                <form method="post" class="form-style">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_nombre">Nombre:</label>
+                        {{ form.nombre }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_codigo">Código (Serial):</label>
+                        {{ form.codigo }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_descripcion">Descripción:</label>
+                        {{ form.descripcion }}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_precio">Precio:</label>
+                            {{ form.precio }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_stock">Stock:</label>
+                            {{ form.stock }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_categoria">Categoría:</label>
+                            {{ form.categoria }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_proveedor">Proveedor:</label>
+                            {{ form.proveedor }}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Guardar</button>
+                        <button type="button" onclick="showMultiForm()" class="btn-secondary">Crear Múltiples</button>
+                        <a href="{% url 'lista_productos' %}" class="btn-cancelar">Cancelar</a>
+                    </div>
+                </form>
+
+                <!-- Formulario para múltiples productos -->
+                <div id="multi-form" style="display: none;">
+                    <form method="post" class="form-style">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>¿Cuántos productos quieres crear?</label>
+                            <input type="number" name="cantidad" min="1" max="10" required class="form-control">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" name="crear_multiple" class="btn-primary">Generar Campos</button>
+                            <button type="button" onclick="hideMultiForm()" class="btn-cancelar">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                {% else %}
+                <!-- Creación múltiple -->
+                <form method="post" class="form-style">
+                    {% csrf_token %}
+                    {{ formset.management_form }}
+
+                    {% for f in formset %}
+                    <div class="producto-multiple">
+                        <h3>Producto {{ forloop.counter }}</h3>
+
+                        <div class="form-group">
+                            <label>Nombre:</label>
+                            {{ f.nombre }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Código (Serial):</label>
+                            {{ f.codigo }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción:</label>
+                            {{ f.descripcion }}
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Precio:</label>
+                                {{ f.precio }}
+                            </div>
+
+                            <div class="form-group">
+                                <label>Stock:</label>
+                                {{ f.stock }}
+                            </div>
+
+                            <div class="form-group">
+                                <label>Categoría:</label>
+                                {{ f.categoria }}
+                            </div>
+
+                            <div class="form-group">
+                                <label>Proveedor:</label>
+                                {{ f.proveedor }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="form-actions">
+                        <button type="submit" name="guardar_multiple" class="btn-primary">Guardar Todos</button>
+                        <a href="{% url 'crear_producto' %}" class="btn-cancelar">Volver a simple</a>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showMultiForm() {
+            document.getElementById('multi-form').style.display = 'block';
+        }
+        function hideMultiForm() {
+            document.getElementById('multi-form').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

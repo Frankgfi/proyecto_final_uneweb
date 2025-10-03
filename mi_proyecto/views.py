@@ -1,9 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Productos, Proveedor, SalidaProducto
+from django.forms import formset_factory
+from django.contrib import messages
+from .forms import ProductoForm, MultipleProductosForm
 
 def inicio(request):
-    # Estadísticas básicas
+    # Estadísticas de productos
     total_productos = len(Productos.objects.all())
     total_proveedores = len(Proveedor.objects.all())
     productos_bajo_stock = len(Productos.objects.filter(stock__lt=5))
@@ -25,18 +28,18 @@ def lista_productos(request):
     page = request.GET.get('page', 1)
     items_per_page = 10
     
-    # Base query con ordenamiento
+    # Base query con ordenamiento #######################
     productos = Productos.objects.all().order_by('nombre')
     
-    # Filtro por categoría
+    # Filtro por categoría #############################
     if categoria_seleccionada != 'todos':
         productos = productos.filter(categoria=categoria_seleccionada)
     
-    # Búsqueda por nombre o código
+    # Búsqueda por nombre o código ###################
     if busqueda:
         productos = productos.filter(nombre__icontains=busqueda)
     
-    # Crear el paginador
+    # Paginador #############################
     paginator = Paginator(productos, items_per_page)
     
     try:
@@ -53,3 +56,60 @@ def lista_productos(request):
         'busqueda': busqueda,
     }
     return render(request, 'mi_proyecto/lista_productos.html', context)
+
+def crear_producto(request):
+    form = ProductoForm()
+    form_multiple = MultipleProductosForm()
+    modo_multiple = False
+    formset = None
+
+    if request.method == 'POST':
+        # Generar formularios múltiples
+        if 'crear_multiple' in request.POST:
+            form_multiple = MultipleProductosForm(request.POST)
+            if form_multiple.is_valid():
+                cantidad = form_multiple.cleaned_data['cantidad']
+                ProductoFormSet = formset_factory(ProductoForm, extra=cantidad)
+                formset = ProductoFormSet()
+                modo_multiple = True
+
+        # Guardar múltiples productos
+        elif 'guardar_multiple' in request.POST:
+            ProductoFormSet = formset_factory(ProductoForm)
+            formset = ProductoFormSet(request.POST)
+            if formset.is_valid():
+                creados = 0
+                for f in formset:
+                    if f.has_changed():
+                        f.save()
+                        creados += 1
+                messages.success(request, f'Se crearon {creados} producto(s).')
+                return redirect('lista_productos')
+            modo_multiple = True
+
+        # Creación individual
+        else:
+            form = ProductoForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Producto creado exitosamente.')
+                return redirect('lista_productos')
+
+    return render(request, 'mi_proyecto/crear_producto.html', {
+        'form': form,
+        'form_multiple': form_multiple,
+        'modo_multiple': modo_multiple,
+        'formset': formset
+    })
+
+def editar_producto(request, id):
+    producto = get_object_or_404(Productos, id=id)
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, instance=producto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Producto "{producto.nombre}" actualizado exitosamente.')
+            return redirect('lista_productos')
+    else:
+        form = ProductoForm(instance=producto)
+    return render(request, 'mi_proyecto/editar_producto.html', {'form': form, 'producto': producto})

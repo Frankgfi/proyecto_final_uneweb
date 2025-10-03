@@ -22,3 +22,8 @@ def clean_cantidad(self):
     if producto and cantidad > producto.stock:
         raise forms.ValidationError(f"No hay suficiente stock. Stock disponible: {producto.stock}")
     return cantidad
+
+from django import forms
+
+class MultipleProductosForm(forms.Form):
+    cantidad = forms.IntegerField(min_value=1, max_value=50, initial=1, label='Cantidad de formularios')

@@ -1,57 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos</title>
 </head>
 <body>
     <h1>Lista de Productos</h1>
-
-<!-- formulario para la busqueda-->
+    
+    <!-- Filtros -->
     <form method="get">
-        <input type="text" name="busqueda" placeholder="Buscar producto o codigo" value="{{ request.GET.busqueda }}">
+        <input type="text" name="busqueda" placeholder="Buscar por nombre" value="{{ busqueda }}">
         <select name="categoria">
-            <option value="">Todas las categorias</option>
+            <option value="todos">Todas las categorías</option>
             {% for codigo, nombre in categorias %}
-                <option value="{{ codigo }}"> {% if request.GET.cateogoria == codigo %} selected {% endif %} {{ nombre }}
+                <option value="{{ codigo }}" {% if categoria_actual == codigo %}selected{% endif %}>
+                    {{ nombre }}
                 </option>
-            {% endfor %}     
+            {% endfor %}
         </select>
-        <button type="submit">Buscar</button>
-</form>
-
-<!-- Lista de productos -->
- <table border="1">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Codigo</th>
-            <th>Categoria</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Proveedor</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for producto in productos %}
+        <button type="submit">Filtrar</button>
+    </form>
+    
+    <!-- Lista de productos -->
+    <table border="1">
+        <thead>
             <tr>
-                <td>{{ producto.nombre }}</td>
-                <td>{{ producto.codigo }}</td>
-                <td>{{ producto.categoria }}</td>
-                <td>{{ producto.precio }}</td>
-                <td>{{ producto.stock }}</td>
-                <td>{{ producto.proveedor }}</td>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Proveedor</th>
             </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.codigo }}</td>
+                    <td>{{ producto.get_categoria_display }}</td>
+                    <td>${{ producto.precio }}</td>
+                    <td>{{ producto.stock }}</td>
+                    <td>{{ producto.proveedor.nombre|default:"Sin proveedor" }}</td>
+                </tr>
             {% empty %}
-            <tr>
-                <td colspan="6">No hay productos registrados</td>       
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="6">No hay productos registrados</td>
-            </tr>
-    </tbody>
- </table>
+                <tr>
+                    <td colspan="6">No hay productos registrados</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Paginación -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if productos.has_previous %}
+                <a href="?page=1{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&laquo; Primera</a>
+                <a href="?page={{ productos.previous_page_number }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Anterior</a>
+            {% endif %}
+
+            <span class="current">
+                Página {{ productos.number }} de {{ productos.paginator.num_pages }}.
+            </span>
+
+            {% if productos.has_next %}
+                <a href="?page={{ productos.next_page_number }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Siguiente</a>
+                <a href="?page={{ productos.paginator.num_pages }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Última &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <nav>
+        <a href="{% url 'inicio' %}">Volver a Inicio</a>
+        <a href="{% url 'crear_producto' %}">Crear Producto</a>
+    </nav>
+    
 </body>
 </html>
