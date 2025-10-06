@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Editar proveedor{% endblock %}
+{% block content %}
+    <div class="header">
+        <h1>Editar proveedor: {{ proveedor.nombre }}</h1>
+        <a href="{% url 'lista_proveedores' %}">Volver</a>
+    </div>
+
+    {% if form.errors %}
+        <div style="color:#b71c1c;">
+            {% for field, errors in form.errors.items %}
+                {% for e in errors %}<div>{{ e }}</div>{% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <p>
+            <label for="id_nombre">Nombre (Empresa):</label><br>
+            {{ form.nombre }}
+        </p>
+        <p>
+            <label for="id_contacto">Persona de contacto (opcional):</label><br>
+            {{ form.contacto }}
+        </p>
+        <p>
+            <label for="id_direccion">Dirección:</label><br>
+            {{ form.direccion }}
+        </p>
+        <p>
+            <label for="id_telefono">Teléfono:</label><br>
+            {{ form.telefono }}
+        </p>
+        <p>
+            <label for="id_email">Email:</label><br>
+            {{ form.email }}
+        </p>
+
+        <button type="submit">Guardar</button>
+        <a href="{% url 'lista_proveedores' %}">Cancelar</a>
+    </form>
+{% endblock %}

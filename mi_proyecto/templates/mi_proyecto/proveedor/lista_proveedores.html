@@ -25,11 +25,26 @@
                 <td>{{ p.direccion }}</td>
                 <td>{{ p.telefono }}</td>
                 <td>{{ p.email }}</td>
-                
+                <td><a href="{% url 'editar_proveedor' p.id %}">Editar</a>
+                    ||
+                    <a href="{% url 'eliminar_proveedor' p.id %}">Eliminar</a>
+                </td>
             </tr>
             {% empty %}
             <tr><td colspan="6">No hay proveedores.</td></tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="pagination" style="margin-top:12px;">
+        {% if proveedores.has_previous %}
+            <a href="?page=1">&laquo; Primera</a>
+            <a href="?page={{ proveedores.previous_page_number }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ proveedores.number }} de {{ proveedores.paginator.num_pages }}</span>
+        {% if proveedores.has_next %}
+            <a href="?page={{ proveedores.next_page_number }}">Siguiente</a>
+            <a href="?page={{ proveedores.paginator.num_pages }}">Última &raquo;</a>
+        {% endif %}
+    </div>
 {% endblock %}

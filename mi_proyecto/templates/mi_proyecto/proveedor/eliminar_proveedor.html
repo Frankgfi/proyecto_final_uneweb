@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Eliminar proveedor{% endblock %}
+{% block content %}
+    <div class="header">
+        <h1>Eliminar proveedor</h1>
+        <a href="{% url 'lista_proveedores' %}">Volver</a>
+    </div>
+
+    <div class="overlay" id="confirm-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center">
+        <div class="modal" style="background:#fff;max-width:420px;width:92%;padding:20px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.2)">
+            <h2>Confirmar eliminación</h2>
+            <div class="resume" style="background:#fafafa;border:1px solid #eee;border-radius:6px;padding:10px;margin-top:8px">
+                <p><strong>Proveedor:</strong> {{ proveedor.nombre }}</p>
+                <p><strong>Contacto:</strong> {{ proveedor.contacto|default:"—" }}</p>
+                <p><strong>Teléfono:</strong> {{ proveedor.telefono }}</p>
+                <p><strong>Email:</strong> {{ proveedor.email }}</p>
+            </div>
+            <div class="actions" style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end">
+                <button class="btn" id="cancelar" style="padding:8px 12px;border:0;border-radius:6px;background:#e0e0e0;cursor:pointer">Cancelar</button>
+                <button class="btn" id="confirmar" style="padding:8px 12px;border:0;border-radius:6px;background:#d32f2f;color:#fff;cursor:pointer">Eliminar</button>
+            </div>
+            <form id="form-delete" method="post" style="display:none;">
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const cancelar = document.getElementById('cancelar');
+    const confirmar = document.getElementById('confirmar');
+    const form = document.getElementById('form-delete');
+
+    cancelar.addEventListener('click', () => {
+        window.location.href = "{% url 'lista_proveedores' %}";
+    });
+    confirmar.addEventListener('click', () => {
+        form.submit();
+    });
+</script>
+{% endblock %}

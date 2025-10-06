@@ -152,3 +152,25 @@ def crear_proveedor(request):
     else:
         form = ProveedorForm()
     return render(request, 'mi_proyecto/proveedor/crear_proveedor.html', {'form': form})
+
+
+def editar_proveedor(request, id):
+    proveedor = get_object_or_404(Proveedor, id=id)
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST, instance=proveedor)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_proveedores')
+    else:
+        form = ProveedorForm(instance=proveedor)
+    return render(request, 'mi_proyecto/proveedor/editar_proveedor.html', {
+        'form': form,
+        'proveedor': proveedor
+    })
+
+def eliminar_proveedor(request, id):
+    proveedor = get_object_or_404(Proveedor, id=id)
+    if request.method == 'POST':
+        proveedor.delete()
+        return redirect('lista_proveedores')
+    return render(request, 'mi_proyecto/proveedor/eliminar_proveedor.html', {'proveedor': proveedor})
