@@ -25,14 +25,6 @@ class Productos(models.Model):
     def __str__(self):
         return self.nombre
 
-class Proveedor(models.Model):
-    nombre = models.CharField(max_length=100)
-    direccion = models.CharField(max_length=200)
-    telefono = models.CharField(max_length=20)
-    email = models.EmailField()
-
-    def __str__(self):
-        return self.nombre
 
 class HistorialMovimiento(models.Model):
     TIPO_MOVIMIENTO = [
@@ -64,3 +56,14 @@ class SalidaProducto(models.Model):
     descripcion = models.TextField(blank=True, help_text="Detalles adicionales sobre la salida")
     fecha_salida = models.DateTimeField(auto_now_add=True)
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+
+class Proveedor(models.Model):
+    nombre = models.CharField(max_length=100)  
+    contacto = models.CharField(max_length=100, blank=True)  # Persona de contacto (opcional)
+    direccion = models.CharField(max_length=200)
+    telefono = models.CharField(max_length=20)
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.nombre

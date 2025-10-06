@@ -27,3 +27,12 @@ from django import forms
 
 class MultipleProductosForm(forms.Form):
     cantidad = forms.IntegerField(min_value=1, max_value=50, initial=1, label='Cantidad de formularios')
+
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = ['nombre', 'contacto', 'direccion', 'telefono', 'email']
+        labels = {
+            'contacto': 'Persona de contacto',
+        }

@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Productos, Proveedor, SalidaProducto
 from django.forms import formset_factory
 from django.contrib import messages
-from .forms import ProductoForm, MultipleProductosForm
+from .forms import ProductoForm, MultipleProductosForm, ProveedorForm
 
 def inicio(request):
     # Estadísticas de productos
@@ -120,3 +120,35 @@ def eliminar_producto(request, id):
         producto.delete()
         return redirect('lista_productos')
     return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto})  
+
+
+
+
+# Proveedor #####################################################
+
+def lista_proveedores(request):
+    page = request.GET.get('page', 1)
+    items_per_page = 10
+
+    proveedores_qs = Proveedor.objects.all().order_by('nombre')
+    paginator = Paginator(proveedores_qs, items_per_page)
+    try:
+        proveedores = paginator.page(page)
+    except PageNotAnInteger:
+        proveedores = paginator.page(1)
+    except EmptyPage:
+        proveedores = paginator.page(paginator.num_pages)
+
+    return render(request, 'mi_proyecto/proveedor/lista_proveedores.html', {
+        'proveedores': proveedores
+    })
+
+def crear_proveedor(request):
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_proveedores')
+    else:
+        form = ProveedorForm()
+    return render(request, 'mi_proyecto/proveedor/crear_proveedor.html', {'form': form})

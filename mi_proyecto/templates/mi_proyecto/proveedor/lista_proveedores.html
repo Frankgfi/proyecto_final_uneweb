@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Proveedores{% endblock %}
+{% block content %}
+    <div class="header">
+        <h1>Proveedores</h1>
+        <a href="{% url 'crear_proveedor' %}">Crear proveedor</a>
+    </div>
+
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Nombre (Empresa)</th>
+                <th>Contacto</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in proveedores %}
+            <tr>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.contacto|default:"—" }}</td>
+                <td>{{ p.direccion }}</td>
+                <td>{{ p.telefono }}</td>
+                <td>{{ p.email }}</td>
+                
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No hay proveedores.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
