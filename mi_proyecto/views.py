@@ -113,3 +113,10 @@ def editar_producto(request, id):
     else:
         form = ProductoForm(instance=producto)
     return render(request, 'mi_proyecto/editar_producto.html', {'form': form, 'producto': producto})
+
+def eliminar_producto(request, id):
+    producto = get_object_or_404(Productos, id=id)
+    if request.method == 'POST':
+        producto.delete()
+        return redirect('lista_productos')
+    return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto})  
