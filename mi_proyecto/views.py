@@ -123,6 +123,15 @@ def editar_producto(request, id):
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
+            # Registrar en historial
+            HistorialMovimiento.objects.create(
+                producto=producto,
+                nombre_producto=producto.nombre,
+                serial_producto=producto.codigo,
+                usuario=request.user if request.user.is_authenticated else None,
+                tipo_movimiento='EDICION',
+                detalles='Edición de producto'
+            )
             messages.success(request, f'Producto "{producto.nombre}" actualizado exitosamente.')
             return redirect('lista_productos')
     else:
