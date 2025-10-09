@@ -141,9 +141,23 @@ def editar_producto(request, id):
 def eliminar_producto(request, id):
     producto = get_object_or_404(Productos, id=id)
     if request.method == 'POST':
+        # Guardar datos antes de eliminar
+        nombre_producto = producto.nombre
+        serial_producto = producto.codigo
+        
+        # Registrar en historial
+        HistorialMovimiento.objects.create(
+            producto=None,
+            nombre_producto=nombre_producto,
+            serial_producto=serial_producto,
+            usuario=request.user if request.user.is_authenticated else None,
+            tipo_movimiento='ELIMINACION',
+            detalles=f'Eliminación de producto: {nombre_producto} (Código: {serial_producto})'
+        )
+        
         producto.delete()
         return redirect('lista_productos')
-    return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto})  
+    return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto}) 
 
 
 # Proveedor #####################################################

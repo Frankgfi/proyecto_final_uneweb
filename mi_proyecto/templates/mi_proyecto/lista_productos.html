@@ -1,27 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Productos</title>
-</head>
-<body>
-    <h1>Lista de Productos</h1>
-    
-    <!-- Filtros -->
-    <form method="get">
+{% extends "base.html" %}
+{% block title %}Productos{% endblock %}
+{% block content %}
+    <div class="header">
+        <h1>Lista de Productos</h1>
+        <a href="{% url 'crear_producto' %}">Crear Producto</a>
+    </div>
+
+    <form method="get" style="margin-bottom:12px;">
         <input type="text" name="busqueda" placeholder="Buscar por nombre" value="{{ busqueda }}">
         <select name="categoria">
-            <option value="todos">Todas las categorías</option>
+            <option value="todos">Todas</option>
             {% for codigo, nombre in categorias %}
-                <option value="{{ codigo }}" {% if categoria_actual == codigo %}selected{% endif %}>
-                    {{ nombre }}
-                </option>
+                <option value="{{ codigo }}" {% if categoria_actual == codigo %}selected{% endif %}>{{ nombre }}</option>
             {% endfor %}
         </select>
         <button type="submit">Filtrar</button>
     </form>
-    
-    <!-- Lista de productos -->
-    <table border="1">
+
+    <table border="1" cellpadding="6">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -30,55 +26,38 @@
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Proveedor</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for producto in productos %}
-                <tr>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.codigo }}</td>
-                    <td>{{ producto.get_categoria_display }}</td>
-                    <td>${{ producto.precio }}</td>
-                    <td>{{ producto.stock }}</td>
-                    <td>{{ producto.proveedor.nombre|default:"Sin proveedor" }}</td>
-                    <td><a href="{% url 'editar_producto' producto.id %}">Editar</a> 
-                        | |
-                        <a href="{% url 'eliminar_producto' producto.id %}">Eliminar</a>
-                    </td>
-                    
-                    
-                </tr>
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.codigo }}</td>
+                <td>{{ producto.get_categoria_display }}</td>
+                <td>${{ producto.precio }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>{{ producto.proveedor.nombre|default:"—" }}</td>
+                <td>
+                    <a href="{% url 'editar_producto' producto.id %}">Editar</a> |
+                    <a href="{% url 'eliminar_producto' producto.id %}">Eliminar</a>
+                </td>
+            </tr>
             {% empty %}
-                <tr>
-                    <td colspan="6">No hay productos registrados</td>
-                </tr>
+            <tr><td colspan="7">No hay productos registrados.</td></tr>
             {% endfor %}
         </tbody>
     </table>
-    
-    <!-- Paginación -->
-    <div class="pagination">
-        <span class="step-links">
-            {% if productos.has_previous %}
-                <a href="?page=1{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&laquo; Primera</a>
-                <a href="?page={{ productos.previous_page_number }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Anterior</a>
-            {% endif %}
 
-            <span class="current">
-                Página {{ productos.number }} de {{ productos.paginator.num_pages }}.
-            </span>
-
-            {% if productos.has_next %}
-                <a href="?page={{ productos.next_page_number }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Siguiente</a>
-                <a href="?page={{ productos.paginator.num_pages }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Última &raquo;</a>
-            {% endif %}
-        </span>
+    <div class="pagination" style="margin-top:12px;">
+        {% if productos.has_previous %}
+            <a href="?page=1{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&laquo; Primera</a>
+            <a href="?page={{ productos.previous_page_number }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Anterior</a>
+        {% endif %}
+        <span>Página {{ productos.number }} de {{ productos.paginator.num_pages }}</span>
+        {% if productos.has_next %}
+            <a href="?page={{ productos.next_page_number }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Siguiente</a>
+            <a href="?page={{ productos.paginator.num_pages }}{% if categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">Última &raquo;</a>
+        {% endif %}
     </div>
-
-    <nav>
-        <a href="{% url 'inicio' %}">Volver a Inicio</a>
-        <a href="{% url 'crear_producto' %}">Crear Producto</a>
-    </nav>
-    
-</body>
-</html>
+{% endblock %}
