@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Historial de Movimientos{% endblock %}
+{% block content %}
+  <div class="header">
+    <h1>Historial de Movimientos</h1>
+  </div>
+
+  <form method="get" style="margin-bottom:12px;">
+    <select name="categoria">
+      <option value="todos" {% if categoria_actual == 'todos' %}selected{% endif %}>Todas</option>
+      {% for cod, nom in categorias %}
+        <option value="{{ cod }}" {% if categoria_actual == cod %}selected{% endif %}>{{ nom }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Filtrar</button>
+    <a href="{% url 'historial_movimientos' %}">Limpiar</a>
+  </form>
+
+  <table border="1" cellpadding="6">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Producto</th>
+        <th>Código</th>
+        <th>Usuario</th>
+        <th>Detalles</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mov in movimientos %}
+      <tr>
+        <td>{{ mov.fecha_movimiento|date:"d/m/Y H:i" }}</td>
+        <td>{{ mov.get_tipo_movimiento_display }}</td>
+        <td>{{ mov.nombre_producto|default:"—" }}</td>
+        <td>{{ mov.serial_producto|default:"—" }}</td>
+        <td>{{ mov.usuario.username|default:"Sistema" }}</td>
+        <td>{{ mov.detalles|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No hay movimientos.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination" style="margin-top:12px;">
+    {% if movimientos.has_previous %}
+      <a href="?page=1{% if categoria_actual and categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}">&laquo; Primera</a>
+      <a href="?page={{ movimientos.previous_page_number }}{% if categoria_actual and categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}">Anterior</a>
+    {% endif %}
+    <span>Página {{ movimientos.number }} de {{ movimientos.paginator.num_pages }}</span>
+    {% if movimientos.has_next %}
+      <a href="?page={{ movimientos.next_page_number }}{% if categoria_actual and categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}">Siguiente</a>
+      <a href="?page={{ movimientos.paginator.num_pages }}{% if categoria_actual and categoria_actual != 'todos' %}&categoria={{ categoria_actual }}{% endif %}">Última &raquo;</a>
+    {% endif %}
+  </div>
+{% endblock %}

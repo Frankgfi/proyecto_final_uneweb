@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Productos, Proveedor, SalidaProducto
+from .models import Productos, Proveedor, SalidaProducto, HistorialMovimiento
 from django.forms import formset_factory
 from django.contrib import messages
 from .forms import ProductoForm, MultipleProductosForm, ProveedorForm
@@ -64,7 +64,6 @@ def crear_producto(request):
     formset = None
 
     if request.method == 'POST':
-        # Generar formularios múltiples
         if 'crear_multiple' in request.POST:
             form_multiple = MultipleProductosForm(request.POST)
             if form_multiple.is_valid():
@@ -73,7 +72,6 @@ def crear_producto(request):
                 formset = ProductoFormSet()
                 modo_multiple = True
 
-        # Guardar múltiples productos
         elif 'guardar_multiple' in request.POST:
             ProductoFormSet = formset_factory(ProductoForm)
             formset = ProductoFormSet(request.POST)
@@ -81,17 +79,34 @@ def crear_producto(request):
                 creados = 0
                 for f in formset:
                     if f.has_changed():
-                        f.save()
+                        producto = f.save()
+                        # Registrar en historial
+                        HistorialMovimiento.objects.create(
+                            producto=producto,
+                            nombre_producto=producto.nombre,
+                            serial_producto=producto.codigo,
+                            usuario=request.user if request.user.is_authenticated else None,
+                            tipo_movimiento='CREACION',
+                            detalles='Creación múltiple de productos'
+                        )
                         creados += 1
                 messages.success(request, f'Se crearon {creados} producto(s).')
                 return redirect('lista_productos')
             modo_multiple = True
 
-        # Creación individual
         else:
             form = ProductoForm(request.POST)
             if form.is_valid():
-                form.save()
+                producto = form.save()
+                # Registrar en historial
+                HistorialMovimiento.objects.create(
+                    producto=producto,
+                    nombre_producto=producto.nombre,
+                    serial_producto=producto.codigo,
+                    usuario=request.user if request.user.is_authenticated else None,
+                    tipo_movimiento='CREACION',
+                    detalles='Creación de producto'
+                )
                 messages.success(request, 'Producto creado exitosamente.')
                 return redirect('lista_productos')
 
@@ -120,8 +135,6 @@ def eliminar_producto(request, id):
         producto.delete()
         return redirect('lista_productos')
     return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto})  
-
-
 
 
 # Proveedor #####################################################
@@ -174,3 +187,31 @@ def eliminar_proveedor(request, id):
         proveedor.delete()
         return redirect('lista_proveedores')
     return render(request, 'mi_proyecto/proveedor/eliminar_proveedor.html', {'proveedor': proveedor})
+
+
+#Historial de movimientos #####################################################
+
+def historial_movimientos(request):
+    categoria_seleccionada = request.GET.get('categoria', 'todos')
+    page = request.GET.get('page', 1)
+    items_per_page = 10
+
+    movimientos_qs = HistorialMovimiento.objects.select_related('producto', 'usuario').order_by('-fecha_movimiento')
+    if categoria_seleccionada != 'todos':
+        movimientos_qs = movimientos_qs.filter(producto__categoria=categoria_seleccionada)
+
+    paginator = Paginator(movimientos_qs, items_per_page)
+    try:
+        movimientos = paginator.page(page)
+    except PageNotAnInteger:
+        movimientos = paginator.page(1)
+    except EmptyPage:
+        movimientos = paginator.page(paginator.num_pages)
+
+    return render(request, 'mi_proyecto/historial_movimientos.html', {
+        'movimientos': movimientos,
+        'categoria_actual': categoria_seleccionada,
+        'categorias': Productos.CATEGORIAS,
+    })
+
+

@@ -14,4 +14,7 @@ urlpatterns = [
     path('proveedores/crear/', views.crear_proveedor, name='crear_proveedor'),
     path('proveedores/editar/<int:id>/', views.editar_proveedor, name='editar_proveedor'),
     path('proveedores/eliminar/<int:id>/', views.eliminar_proveedor, name='eliminar_proveedor'),
+
+    # Historial de movimientos #####################################################
+    path('historial_movimientos/', views.historial_movimientos, name='historial_movimientos'),
 ]

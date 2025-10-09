@@ -67,3 +67,27 @@ class Proveedor(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class HistorialMovimiento(models.Model):
+    TIPO_MOVIMIENTO = [
+        ('CREACION', 'Creación'),
+        ('EDICION', 'Edición'),
+        ('ELIMINACION', 'Eliminación'),
+    ]
+
+    producto = models.ForeignKey(
+        Productos, on_delete=models.SET_NULL, null=True, related_name='historial'
+    )
+    nombre_producto = models.CharField(max_length=100, blank=True)
+    serial_producto = models.CharField(max_length=50, blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    tipo_movimiento = models.CharField(max_length=20, choices=TIPO_MOVIMIENTO)
+    fecha_movimiento = models.DateTimeField(auto_now_add=True)
+    detalles = models.TextField(blank=True)
+
+    def __str__(self):
+        nombre = self.nombre_producto or (self.producto.nombre if self.producto else 'Producto Eliminado')
+        return f"{self.get_tipo_movimiento_display()} - {nombre} - {self.fecha_movimiento:%d/%m/%Y %H:%M}"
+
+    class Meta:
+        ordering = ['-fecha_movimiento']
