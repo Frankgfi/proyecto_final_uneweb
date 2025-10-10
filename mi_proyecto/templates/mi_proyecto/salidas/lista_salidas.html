@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Salidas de Productos{% endblock %}
+{% block content %}
+    <div class="header">
+        <h1>Salidas de Productos</h1>
+        <a href="{% url 'registrar_salidas' %}">Registrar Salida</a>
+    </div>
+
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Motivo</th>
+                <th>Usuario</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for salida in salidas %}
+            <tr>
+                <td>{{ salida.fecha_salida|date:"d/m/Y H:i" }}</td>
+                <td>{{ salida.producto.nombre }}</td>
+                <td>{{ salida.cantidad }}</td>
+                <td>{{ salida.get_motivo_display }}</td>
+                <td>{{ salida.usuario.username|default:"Sistema" }}</td>
+                <td>{{ salida.descripcion|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No hay salidas registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination" style="margin-top:12px;">
+        {% if salidas.has_previous %}
+            <a href="?page=1">&laquo; Primera</a>
+            <a href="?page={{ salidas.previous_page_number }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ salidas.number }} de {{ salidas.paginator.num_pages }}</span>
+        {% if salidas.has_next %}
+            <a href="?page={{ salidas.next_page_number }}">Siguiente</a>
+            <a href="?page={{ salidas.paginator.num_pages }}">Última &raquo;</a>
+        {% endif %}
+    </div>
+{% endblock %}

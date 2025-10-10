@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Productos, Proveedor, SalidaProducto, HistorialMovimiento
 from django.forms import formset_factory
 from django.contrib import messages
-from .forms import ProductoForm, MultipleProductosForm, ProveedorForm
+from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm
 
 def inicio(request):
     # Estadísticas de productos
@@ -238,3 +238,37 @@ def historial_movimientos(request):
     })
 
 
+def lista_salidas(request):
+    page = request.GET.get('page', 1)
+    items_per_page = 15
+
+    salidas_qs = SalidaProducto.objects.select_related('producto', 'usuario').order_by('-fecha_salida')
+    paginator = Paginator(salidas_qs, items_per_page)
+    
+    try:
+        salidas = paginator.page(page)
+    except PageNotAnInteger:
+        salidas = paginator.page(1)
+    except EmptyPage:
+        salidas = paginator.page(paginator.num_pages)
+
+    return render(request, 'mi_proyecto/salidas/lista_salidas.html', {
+        'salidas': salidas
+    })
+
+def registrar_salida(request):
+    if request.method == 'POST':
+        form = SalidaProductoForm(request.POST)
+        if form.is_valid():
+            try:
+                salida = form.save(commit=False)
+                salida.usuario = request.user if request.user.is_authenticated else None
+                salida.save()
+                messages.success(request, f'Salida registrada: {salida.cantidad} unidades de {salida.producto.nombre}')
+                return redirect('lista_salidas')
+            except ValueError as e:
+                messages.error(request, str(e))
+    else:
+        form = SalidaProductoForm()
+    
+    return render(request, 'mi_proyecto/salidas/registrar_salidas.html', {'form': form})

@@ -22,9 +22,8 @@
             <h2>Menú Principal</h2>
             <div class="filter-menu">
                 <a href="{% url 'lista_productos' %}">Productos</a>
-                <!-- Pendientes de implementar; deja "#" para evitar NoReverseMatch -->
                 <a href="{% url 'historial_movimientos' %}">Historial</a>
-                <a href="#">Salidas</a>
+                <a href="{% url 'lista_salidas' %}">Salidas</a>
                 <a href="{% url 'lista_proveedores' %}">Proveedores</a>
             </div>
         </nav>

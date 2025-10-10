@@ -17,4 +17,8 @@ urlpatterns = [
 
     # Historial de movimientos #####################################################
     path('historial_movimientos/', views.historial_movimientos, name='historial_movimientos'),
+
+    # Salidas de productos #####################################################
+    path('salidas/', views.lista_salidas, name='lista_salidas'),
+    path('salidas/registrar/', views.registrar_salida, name='registrar_salidas'),
 ]

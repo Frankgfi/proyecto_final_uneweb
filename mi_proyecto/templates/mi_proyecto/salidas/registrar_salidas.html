@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Registrar Salida{% endblock %}
+{% block content %}
+    <div class="header">
+        <h1>Registrar Salida de Producto</h1>
+    </div>
+
+    {% if messages %}
+        <ul>
+            {% for m in messages %}
+                <li>{{ m }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if form.errors %}
+        <div style="color:#b71c1c;">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <p><label>Producto:</label> {{ form.producto }}</p>
+        <p><label>Cantidad:</label> {{ form.cantidad }}</p>
+        <p><label>Motivo:</label> {{ form.motivo }}</p>
+        <p><label>Descripción (opcional):</label> {{ form.descripcion }}</p>
+        
+        <button type="submit">Registrar Salida</button>
+        <a href="{% url 'lista_salidas' %}">Cancelar</a>
+    </form>
+{% endblock %}

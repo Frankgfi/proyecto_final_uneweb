@@ -31,6 +31,7 @@ class HistorialMovimiento(models.Model):
         ('CREACION', 'creacion'),
         ('EDICION', 'edicion'),
         ('ELIMINACION', 'eliminacion'),
+        ('SALIDA', 'Salida'),
     ]    
 
     producto = models.ForeignKey(Productos, on_delete=models.SET_NULL, null=True, related_name='historial')
@@ -56,6 +57,29 @@ class SalidaProducto(models.Model):
     descripcion = models.TextField(blank=True, help_text="Detalles adicionales sobre la salida")
     fecha_salida = models.DateTimeField(auto_now_add=True)
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"Salida de {self.cantidad} {self.producto.nombre} - {self.get_motivo_display()}"
+    
+    def save(self, *args, **kwargs):
+        # Verificar stock disponible antes de guardar
+        if self.cantidad > self.producto.stock:
+            raise ValueError(f"No hay suficiente stock. Stock disponible: {self.producto.stock}")
+        
+        # Actualizar el stock del producto
+        self.producto.stock -= self.cantidad
+        self.producto.save()
+        super().save(*args, **kwargs)
+        
+        # Registrar el movimiento en el historial
+        HistorialMovimiento.objects.create(
+            producto=self.producto,
+            nombre_producto=self.producto.nombre,
+            serial_producto=self.producto.codigo,  
+            usuario=self.usuario,
+            tipo_movimiento='EDICION',
+            detalles=f"Salida de {self.cantidad} unidades. Motivo: {self.get_motivo_display()}. {self.descripcion}"
+        )
 
 
 class Proveedor(models.Model):
