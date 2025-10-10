@@ -4,6 +4,7 @@ from .models import Productos, Proveedor, SalidaProducto, HistorialMovimiento
 from django.forms import formset_factory
 from django.contrib import messages
 from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm
+from decimal import Decimal
 
 def inicio(request):
     # Estadísticas de productos
@@ -79,7 +80,10 @@ def crear_producto(request):
                 creados = 0
                 for f in formset:
                     if f.has_changed():
-                        producto = f.save()
+                        producto = f.save(commit=False)
+                        ######################### Aumento de 30% el precio #########################
+                        producto.precio = producto.precio *1.3 
+                        producto.save()
                         # Registrar en historial
                         HistorialMovimiento.objects.create(
                             producto=producto,
@@ -97,7 +101,11 @@ def crear_producto(request):
         else:
             form = ProductoForm(request.POST)
             if form.is_valid():
-                producto = form.save()
+                producto = form.save(commit=False)
+                ######################### Aumento de 30% el precio ################
+                producto.precio = producto.precio * Decimal ('1.3')
+                producto.precio = producto.precio.quantize(Decimal('0.01'))  
+                producto.save()
                 # Registrar en historial
                 HistorialMovimiento.objects.create(
                     producto=producto,
@@ -122,7 +130,11 @@ def editar_producto(request, id):
     if request.method == 'POST':
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
-            form.save()
+            producto = form.save(commit=False)
+            ######################### Aumento de 30% el precio #########################
+            producto.precio = producto.precio * Decimal('1.3')
+            producto.precio = producto.precio.quantize(Decimal('0.01'))
+            producto.save()
             # Registrar en historial
             HistorialMovimiento.objects.create(
                 producto=producto,
