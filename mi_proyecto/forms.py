@@ -58,3 +58,11 @@ class SalidaProductoForm(forms.ModelForm):
             raise forms.ValidationError(f"No hay suficiente stock. Stock disponible: {producto.stock}")
         
         return cantidad
+    
+class ImportarExcelForm(forms.Form):
+    archivo_excel = forms.FileField(
+        label='Archivo Excel',
+        help_text='Seleccione el archivo Excel con los productos a importar',
+        widget=forms.FileInput(attrs={'accept': '.xlsx,.xls'})
+    )
+

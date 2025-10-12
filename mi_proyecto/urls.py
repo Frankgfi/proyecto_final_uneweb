@@ -7,7 +7,7 @@ urlpatterns = [
     path('productos/crear/', views.crear_producto, name='crear_producto'),
     path('productos/editar/<int:id>/', views.editar_producto, name='editar_producto'),
     path('productos/eliminar/<int:id>/', views.eliminar_producto, name='eliminar_producto'),
-
+    path('productos/importar-excel/', views.importar_excel, name='importar_excel'),
 
     # Proveedor #####################################################
     path('proveedores/', views.lista_proveedores, name='lista_proveedores'),

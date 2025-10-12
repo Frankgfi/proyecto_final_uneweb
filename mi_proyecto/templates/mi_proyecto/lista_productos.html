@@ -3,7 +3,10 @@
 {% block content %}
     <div class="header">
         <h1>Lista de Productos</h1>
-        <a href="{% url 'crear_producto' %}">Crear Producto</a>
+        <div>
+            <a href="{% url 'crear_producto' %}">Crear Producto</a>
+            <a href="{% url 'importar_excel' %}" style="margin-left: 10px;">Importar desde Excel</a>
+        </div>
     </div>
 
     <form method="get" style="margin-bottom:12px;">
@@ -20,8 +23,8 @@
     <table border="1" cellpadding="6">
         <thead>
             <tr>
-                <th>Nombre</th>
                 <th>Código</th>
+                <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Precio</th>
                 <th>Stock</th>
@@ -32,8 +35,8 @@
         <tbody>
             {% for producto in productos %}
             <tr>
-                <td>{{ producto.nombre }}</td>
                 <td>{{ producto.codigo }}</td>
+                <td>{{ producto.nombre }}</td>
                 <td>{{ producto.get_categoria_display }}</td>
                 <td>${{ producto.precio }}</td>
                 <td>{{ producto.stock }}</td>

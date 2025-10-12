@@ -3,8 +3,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Productos, Proveedor, SalidaProducto, HistorialMovimiento
 from django.forms import formset_factory
 from django.contrib import messages
-from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm
+from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm, ImportarExcelForm
 from decimal import Decimal
+import openpyxl
+from openpyxl import load_workbook
 
 def inicio(request):
     # Estadísticas de productos
@@ -284,3 +286,132 @@ def registrar_salida(request):
         form = SalidaProductoForm()
     
     return render(request, 'mi_proyecto/salidas/registrar_salidas.html', {'form': form})
+
+def importar_excel(request):
+    if request.method == 'POST':
+        form = ImportarExcelForm(request.POST, request.FILES)
+        if form.is_valid():
+            archivo_excel = request.FILES['archivo_excel']
+            
+            try:
+                # Cargar el archivo Excel ############################
+                workbook = load_workbook(archivo_excel)
+                sheet = workbook.active
+                
+                productos_importados = 0
+                productos_actualizados = 0
+                errores = []
+                
+                # Leer las filas del Excel (Las primeras filas son encabezados)
+                for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                    try:
+                        # Extraer datos de cada fila
+                        codigo = str(row[0]).strip() if row[0] else None
+                        nombre = str(row[1]).strip() if row[1] else None
+                        descripcion = str(row[2]).strip() if row[2] else ""
+                        precio = float(row[3]) if row[3] else 0
+                        stock = int(row[4]) if row[4] else 0
+                        categoria = str(row[5]).strip() if row[5] else "COMPUTADORAS"
+                        proveedor_nombre = str(row[6]).strip() if row[6] else None
+                        
+                        # Validar datos requeridos
+                        if not nombre or not codigo:
+                            errores.append(f"Fila {row_num}: Nombre y código son requeridos")
+                            continue
+                        
+                        # Validar categoría
+                        categorias_validas = [cat[0] for cat in Productos.CATEGORIAS]
+                        categoria_upper = categoria.upper()
+                        if categoria_upper not in categorias_validas:
+                            categoria = "COMPUTADORAS"  # Valor por defecto
+                        else:
+                            categoria = categoria_upper  # Usar la versión en mayúsculas
+                        
+                        # Buscar o crear proveedor
+                        proveedor = None
+                        if proveedor_nombre:
+                            proveedor, created = Proveedor.objects.get_or_create(
+                                nombre=proveedor_nombre,
+                                defaults={
+                                    'direccion': 'Dirección por definir',
+                                    'telefono': '0000-0000',
+                                    'email': 'email@ejemplo.com'
+                                }
+                            )
+                        
+                        # Aplicar aumento del 30% al precio
+                        precio_final = Decimal(str(precio)) * Decimal('1.3')
+                        precio_final = precio_final.quantize(Decimal('0.01'))
+                        
+                        # Verificar si el producto ya existe
+                        producto_existente = Productos.objects.filter(codigo=codigo).first()
+                        
+                        if producto_existente:
+                            # Actualizar producto existente
+                            producto_existente.nombre = nombre
+                            producto_existente.descripcion = descripcion
+                            producto_existente.precio = precio_final
+                             # Sumar al stock existente 
+                            producto_existente.stock += stock  
+                            producto_existente.categoria = categoria
+                            producto_existente.proveedor = proveedor
+                            producto_existente.save()
+                            
+                            # Registrar en historial
+                            HistorialMovimiento.objects.create(
+                                producto=producto_existente,
+                                nombre_producto=producto_existente.nombre,
+                                serial_producto=producto_existente.codigo,
+                                usuario=request.user if request.user.is_authenticated else None,
+                                tipo_movimiento='EDICION',
+                                detalles=f'Actualización desde Excel - Stock agregado: {stock}'
+                            )
+                            productos_actualizados += 1
+                        else:
+                            # Crear nuevo producto
+                            nuevo_producto = Productos.objects.create(
+                                nombre=nombre,
+                                codigo=codigo,
+                                descripcion=descripcion,
+                                precio=precio_final,
+                                stock=stock,
+                                categoria=categoria,
+                                proveedor=proveedor
+                            )
+                            
+                            # Registrar en historial
+                            HistorialMovimiento.objects.create(
+                                producto=nuevo_producto,
+                                nombre_producto=nuevo_producto.nombre,
+                                serial_producto=nuevo_producto.codigo,
+                                usuario=request.user if request.user.is_authenticated else None,
+                                tipo_movimiento='CREACION',
+                                detalles='Creación desde Excel'
+                            )
+                            productos_importados += 1
+                            
+                    except Exception as e:
+                        errores.append(f"Fila {row_num}: Error procesando datos - {str(e)}")
+                        continue
+                
+                # Mostrar resultados
+                if productos_importados > 0 or productos_actualizados > 0:
+                    mensaje = f"Importación completada: {productos_importados} productos nuevos, {productos_actualizados} productos actualizados."
+                    if errores:
+                        mensaje += f" Errores: {len(errores)}"
+                    messages.success(request, mensaje)
+                else:
+                    messages.warning(request, "No se importaron productos. Verifique el formato del archivo.")
+                
+                if errores:
+                    for error in errores[:10]:  # Mostrar solo los primeros 10 errores
+                        messages.error(request, error)
+                
+                return redirect('lista_productos')
+                
+            except Exception as e:
+                messages.error(request, f"Error al procesar el archivo Excel: {str(e)}")
+    else:
+        form = ImportarExcelForm()
+    
+    return render(request, 'mi_proyecto/importar_excel.html', {'form': form})

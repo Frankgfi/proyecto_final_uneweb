@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Importar Productos desde Excel{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Importar Productos desde Excel</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>Formato del archivo Excel:</h5>
+                        <p>El archivo debe tener las siguientes columnas en orden:</p>
+                        <ol>
+                            <li><strong>Código</strong> - Código único del producto (requerido)</li>
+                            <li><strong>Nombre</strong> - Nombre del producto (requerido)</li>
+                            <li><strong>Descripción</strong> - Descripción del producto</li>
+                            <li><strong>Precio</strong> - Precio del producto (se aplicará 30% de aumento)</li>
+                            <li><strong>Stock</strong> - Cantidad en stock</li>
+                            <li><strong>Categoría</strong> - COMPUTADORAS, LAPTOPS, UPS, PERIFERICOS</li>
+                            <li><strong>Proveedor</strong> - Nombre del proveedor (opcional)</li>
+                        </ol>
+                        <p><small>La primera fila debe contener los encabezados. Los productos existentes se actualizarán sumando el stock.</small></p>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.archivo_excel.id_for_label }}" class="form-label">{{ form.archivo_excel.label }}</label>
+                            {{ form.archivo_excel }}
+                            {% if form.archivo_excel.help_text %}
+                                <div class="form-text">{{ form.archivo_excel.help_text }}</div>
+                            {% endif %}
+                            {% if form.archivo_excel.errors %}
+                                <div class="text-danger">{{ form.archivo_excel.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> Importar Productos
+                            </button>
+                            <a href="{% url 'lista_productos' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
