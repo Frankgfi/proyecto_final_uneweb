@@ -25,6 +25,7 @@
             <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th>Descripcion</th>
                 <th>Categoría</th>
                 <th>Precio</th>
                 <th>Stock</th>
@@ -37,6 +38,7 @@
             <tr>
                 <td>{{ producto.codigo }}</td>
                 <td>{{ producto.nombre }}</td>
+                <td>{{ producto.descripcion }}</td>
                 <td>{{ producto.get_categoria_display }}</td>
                 <td>${{ producto.precio }}</td>
                 <td>{{ producto.stock }}</td>
