@@ -5,8 +5,12 @@ from django.forms import formset_factory
 from django.contrib import messages
 from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm, ImportarExcelForm
 from decimal import Decimal
-import openpyxl
 from openpyxl import load_workbook
+from io import BytesIO
+from datetime import datetime
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 
 def inicio(request):
     # Estadísticas de productos
@@ -415,3 +419,58 @@ def importar_excel(request):
         form = ImportarExcelForm()
     
     return render(request, 'mi_proyecto/importar_excel.html', {'form': form})
+
+
+def generar_pdf_salida(request, id):
+    salida = get_object_or_404(SalidaProducto, id=id)
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setTitle(f"Comprobante de Salida - {salida.producto.nombre}")
+
+    # Encabezado
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(72, 750, "Comprobante de Salida de Producto")
+    p.setFont("Helvetica", 12)
+    p.drawString(72, 730, f"Fecha: {salida.fecha_salida.strftime('%d/%m/%Y %H:%M')}")
+
+    # Información del producto
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(72, 700, "Detalles del Producto:")
+    p.setFont("Helvetica", 12)
+    p.drawString(72, 680, f"Producto: {salida.producto.nombre}")
+    p.drawString(72, 660, f"Código: {salida.producto.codigo}")
+    p.drawString(72, 640, f"Cantidad: {salida.cantidad}")
+    p.drawString(72, 620, f"Motivo: {salida.get_motivo_display()}")
+
+    # Descripción multilínea (si existe)
+    if salida.descripcion:
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(72, 600, "Descripción:")
+        p.setFont("Helvetica", 12)
+        y = 580
+        for line in salida.descripcion.split('\n'):
+            p.drawString(72, y, line)
+            y -= 16
+            if y < 120:  # salto de página si se acaba el espacio
+                p.showPage()
+                y = 750
+                p.setFont("Helvetica", 12)
+
+    # Usuario
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(72, 480, "Registrado por:")
+    p.setFont("Helvetica", 12)
+    p.drawString(72, 460, f"Usuario: {salida.usuario.username if salida.usuario else 'Sistema'}")
+
+    # Firma
+    p.setFont("Helvetica", 10)
+    p.drawString(72, 120, "Firma del Responsable: ________________________")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="salida_{salida.id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+    return response

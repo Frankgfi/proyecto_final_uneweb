@@ -21,4 +21,6 @@ urlpatterns = [
     # Salidas de productos #####################################################
     path('salidas/', views.lista_salidas, name='lista_salidas'),
     path('salidas/registrar/', views.registrar_salida, name='registrar_salidas'),
+
+    path('salidas/<int:id>/pdf/', views.generar_pdf_salida, name='generar_pdf_salida'),
 ]

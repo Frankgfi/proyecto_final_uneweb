@@ -15,6 +15,7 @@
                 <th>Motivo</th>
                 <th>Usuario</th>
                 <th>Descripción</th>
+                <th>PDF</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,7 @@
                 <td>{{ salida.get_motivo_display }}</td>
                 <td>{{ salida.usuario.username|default:"Sistema" }}</td>
                 <td>{{ salida.descripcion|default:"—" }}</td>
+                <td><a href="{% url 'generar_pdf_salida' salida.id %}">Descargar PDF</a></td>
             </tr>
             {% empty %}
             <tr><td colspan="6">No hay salidas registradas.</td></tr>
