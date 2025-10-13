@@ -23,4 +23,8 @@ urlpatterns = [
     path('salidas/registrar/', views.registrar_salida, name='registrar_salidas'),
 
     path('salidas/<int:id>/pdf/', views.generar_pdf_salida, name='generar_pdf_salida'),
+    
+    path('productos/deshabilitar/<int:id>/', views.deshabilitar_producto, name='deshabilitar_producto'),
+    path('productos/habilitar/<int:id>/', views.habilitar_producto, name='habilitar_producto'),
+    path('productos/inhabilitados/', views.productos_inhabilitados, name='productos_inhabilitados'),
 ]

@@ -30,25 +30,24 @@ def inicio(request):
     return render(request, 'mi_proyecto/inicio.html', context)
 
 def lista_productos(request):
-    categoria_seleccionada = request.GET.get('categoria', 'todos')
+    categoria_actual = request.GET.get('categoria', 'todos')
     busqueda = request.GET.get('busqueda', '')
     page = request.GET.get('page', 1)
     items_per_page = 10
-    
-    # Base query con ordenamiento #######################
-    productos = Productos.objects.all().order_by('nombre')
-    
-    # Filtro por categoría #############################
-    if categoria_seleccionada != 'todos':
-        productos = productos.filter(categoria=categoria_seleccionada)
-    
-    # Búsqueda por nombre o código ###################
+
+    # Solo productos activos
+    productos = Productos.objects.filter(activo=True).order_by('nombre')
+
+    # Filtro por categoría
+    if categoria_actual != 'todos':
+        productos = productos.filter(categoria=categoria_actual)
+
+    # Búsqueda por nombre
     if busqueda:
         productos = productos.filter(nombre__icontains=busqueda)
-    
-    # Paginador #############################
+
+    # Paginador
     paginator = Paginator(productos, items_per_page)
-    
     try:
         productos_paginados = paginator.page(page)
     except PageNotAnInteger:
@@ -56,16 +55,15 @@ def lista_productos(request):
     except EmptyPage:
         productos_paginados = paginator.page(paginator.num_pages)
 
-    low_stock_count = Productos.objects.filter(stock__lte=3).count()
+    low_stock_count = Productos.objects.filter(stock__lte=3, activo=True).count()
 
     return render(request, 'mi_proyecto/lista_productos.html', {
         'productos': productos_paginados,
         'categorias': Productos.CATEGORIAS,
-        'categoria_actual': categoria_seleccionada,
+        'categoria_actual': categoria_actual,
         'busqueda': busqueda,
         'low_stock_count': low_stock_count,
     })
-
 
 def crear_producto(request):
     form = ProductoForm()
@@ -180,6 +178,57 @@ def eliminar_producto(request, id):
         return redirect('lista_productos')
     return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto}) 
 
+def deshabilitar_producto(request, id):
+    producto = get_object_or_404(Productos, id=id)
+    if request.method == 'POST':
+        producto.activo = False
+        producto.save()
+        # Registrar en historial
+        HistorialMovimiento.objects.create(
+            producto=producto,
+            nombre_producto=producto.nombre,
+            serial_producto=producto.codigo,
+            usuario=request.user if request.user.is_authenticated else None,
+            tipo_movimiento='DESHABILITACION',
+            detalles='Producto deshabilitado'
+        )
+        messages.success(request, f'Producto "{producto.nombre}" deshabilitado.')
+        return redirect('lista_productos')
+    return render(request, 'mi_proyecto/deshabilitar_producto.html', {'producto': producto})
+def productos_inhabilitados(request):
+    page = request.GET.get('page', 1)
+    items_per_page = 10
+
+    productos = Productos.objects.filter(activo=False).order_by('nombre')
+    paginator = Paginator(productos, items_per_page)
+    try:
+        productos_paginados = paginator.page(page)
+    except PageNotAnInteger:
+        productos_paginados = paginator.page(1)
+    except EmptyPage:
+        productos_paginados = paginator.page(paginator.num_pages)
+
+    return render(request, 'mi_proyecto/lista_inhabilitados.html', {
+        'productos': productos_paginados,
+    })
+
+def habilitar_producto(request, id):
+    producto = get_object_or_404(Productos, id=id)
+    if request.method == 'POST':
+        producto.activo = True
+        producto.save()
+        # Registrar en historial
+        HistorialMovimiento.objects.create(
+            producto=producto,
+            nombre_producto=producto.nombre,
+            serial_producto=producto.codigo,
+            usuario=request.user if request.user.is_authenticated else None,
+            tipo_movimiento='EDICION',
+            detalles='Producto habilitado'
+        )
+        messages.success(request, f'Producto "{producto.nombre}" habilitado.')
+        return redirect('productos_inhabilitados')
+    return render(request, 'mi_proyecto/habilitar_producto.html', {'producto': producto})
 
 # Proveedor #####################################################
 

@@ -6,6 +6,7 @@
         <div>
             <a href="{% url 'crear_producto' %}">Crear Producto</a>
             <a href="{% url 'importar_excel' %}" style="margin-left: 10px;">Importar desde Excel</a>
+            <a href="{% url 'productos_inhabilitados' %}">Ver productos inhabilitados</a>
         </div>
     </div>
 
@@ -57,9 +58,10 @@
                 </td>
 </td>
                 <td>{{ producto.proveedor.nombre|default:"—" }}</td>
-                <td>
-                    <a href="{% url 'editar_producto' producto.id %}">Editar</a> |
-                    <a href="{% url 'eliminar_producto' producto.id %}">Eliminar</a>
+                <td class="action-buttons">
+                    <a href="{% url 'editar_producto' producto.id %}" class="btn-editar">Editar</a>
+                    <a href="{% url 'eliminar_producto' producto.id %}" class="btn-eliminar">Eliminar</a>
+                    <a href="{% url 'deshabilitar_producto' producto.id %}" class="btn-deshabilitar">Deshabilitar</a>
                 </td>
             </tr>
             {% empty %}

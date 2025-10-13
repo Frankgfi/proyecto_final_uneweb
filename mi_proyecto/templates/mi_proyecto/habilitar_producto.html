@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Habilitar Producto{% endblock %}
+{% block content %}
+    <h2>¿Está seguro que desea habilitar el producto "{{ producto.nombre }}"?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Sí, habilitar</button>
+        <a href="{% url 'productos_inhabilitados' %}">Cancelar</a>
+    </form>
+{% endblock %}

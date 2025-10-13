@@ -104,42 +104,44 @@ body {
   .content tbody tr:nth-child(even) { background: #f8f9fa; }
   .content tbody tr:hover { background: #f1f1f1; }
   
-  /* Botones */
-  .btn-success {
-    background: #4CAF50; color: #fff; padding: 10px 20px; border-radius: 25px;
-    text-decoration: none; margin-bottom: 1rem; display: inline-block; transition: transform .3s ease;
-  }
-  .btn-success:hover { background: #45a049; transform: translateY(-2px); }
-  .btn-info {
-    background-color: #17a2b8; color: #fff; padding: 8px 16px; border-radius: 4px; text-decoration: none; transition: background-color .3s;
-  }
-  .btn-info:hover { background-color: #138496; color: #fff; }
-  
-  /* Grupo de botones/acciones */
-  .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-  .btn-editar, .btn-eliminar {
-    padding: 6px 12px; border-radius: 15px; text-decoration: none; font-size: .85em;
-  }
-  .btn-editar { background: #2196F3; color: white; }
-  .btn-eliminar { background: #f44336; color: white; }
-  
-  /* Botones “Editar / Eliminar”*/
-  .content tbody td:last-child a {
-    display: inline-block; padding: 6px 10px; border-radius: 6px; text-decoration: none; color: #fff;
-    margin-right: 6px; font-size: 14px; line-height: 1;
-  }
-  .content tbody td:last-child a:first-child {
-    background: #0ea5e9; border: 1px solid #0284c7;
-  }
-  .content tbody td:last-child a:first-child:hover {
-    background: #0284c7;
-  }
-  .content tbody td:last-child a:last-child {
-    background: #ef4444; border: 1px solid #dc2626;
-  }
-  .content tbody td:last-child a:last-child:hover {
-    background: #dc2626;
-  }
+  /* Botones de acción claros y consistentes */
+.btn-editar, .btn-eliminar, .btn-deshabilitar {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-size: 0.95em;
+  border: none;
+  margin-right: 6px;
+  font-weight: 500;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.btn-editar {
+  background: #0a3151;
+  color: #fff;
+}
+.btn-editar:hover {
+  background: #082339;
+}
+
+.btn-eliminar {
+  background: #900b02;
+  color: #fff;
+}
+.btn-eliminar:hover {
+  background: #b71c1c;
+}
+
+.btn-deshabilitar {
+  background: #fbc02d;
+  color: #333;
+}
+.btn-deshabilitar:hover {
+  background: #f9a825;
+  color: #222;
+}
   
   /* Alerta de stock bajo*/
   .stock-alert {
@@ -160,3 +162,183 @@ body {
   }
   .pagination a:hover { background: #f8fafc; }
   .pagination span { color: #475569; }
+
+
+
+  /* Formularios para la creacion, edicion */
+
+/* Tarjeta de formulario (auto-aplicado a formularios POST) */
+.content form:not([method="get"]) {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px;
+    max-width: 800px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  }
+  
+  /* Layout de campos (2 columnas en pantallas medianas) */
+  .content form:not([method="get"]) p {
+    margin: 0 0 12px 0;
+  }
+  .content form:not([method="get"]) p,
+  .content form:not([method="get"]) .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  @media (min-width: 720px) {
+    .content form:not([method="get"]) .form-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  /* Etiquetas y campos */
+  .content form:not([method="get"]) label {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.95rem;
+  }
+  .content form:not([method="get"]) input[type="text"],
+  .content form:not([method="get"]) input[type="number"],
+  .content form:not([method="get"]) input[type="email"],
+  .content form:not([method="get"]) input[type="date"],
+  .content form:not([method="get"]) select,
+  .content form:not([method="get"]) textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f172a;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  .content form:not([method="get"]) textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+  .content form:not([method="get"]) input:focus,
+  .content form:not([method="get"]) select:focus,
+  .content form:not([method="get"]) textarea:focus {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
+  }
+  
+  /* Grupo de acciones */
+  .content form:not([method="get"]) .form-actions,
+  .content form:not([method="get"]) .button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+  .content form:not([method="get"]) button[type="submit"],
+  .content form:not([method="get"]) .btn-primary {
+    background: #0ea5e9;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .content form:not([method="get"]) button[type="submit"]:hover,
+  .content form:not([method="get"]) .btn-primary:hover {
+    background: #0284c7;
+  }
+  .content form:not([method="get"]) .btn-cancelar,
+  .content form:not([method="get"]) a[href*="lista_"],
+  .content form:not([method="get"]) a[href*="proveedores"],
+  .content form:not([method="get"]) a[href*="productos"] {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f172a;
+    text-decoration: none;
+  }
+  .content form:not([method="get"]) .btn-cancelar:hover,
+  .content form:not([method="get"]) a[href*="lista_"]:hover {
+    background: #f8fafc;
+  }
+  
+  /* Estados/errores */
+  .content ul li { list-style: none; }
+  .content .alert,
+  .content .alert-danger {
+    background: #fff3cd;
+    border: 1px solid #ffe08a;
+    color: #7a5d00;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .content .field-error,
+  .content span.errorlist,
+  .content ul.errorlist {
+    display: block;
+    color: #b91c1c;
+    margin-top: 4px;
+    font-size: 0.9rem;
+  }
+  .content ul.errorlist {
+    padding: 0;
+    margin: 6px 0 0 0;
+  }
+  .content ul.errorlist li { list-style: none; }
+  
+  /* Selects y opciones */
+  .content select {
+    background-image: linear-gradient(45deg, transparent 50%, #64748b 50%),
+                      linear-gradient(135deg, #64748b 50%, transparent 50%),
+                      linear-gradient(to right, #e2e8f0, #e2e8f0);
+    background-position: calc(100% - 16px) calc(50% - 4px),
+                         calc(100% - 11px) calc(50% - 4px),
+                         calc(100% - 2.2rem) 50%;
+    background-size: 6px 6px, 6px 6px, 1px 70%;
+    background-repeat: no-repeat;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  
+  /* Formularios anidados (formset múltiple) */
+  .content fieldset {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #fff;
+  }
+  .content fieldset h3 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #0f172a;
+  }
+  
+  /* Enlaces secundarios en formularios */
+  .content a.btn-secondary {
+    background: #6c757d;
+    color: #000000 !important;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    border: none;
+  }
+  .content a.btn-secondary:hover { background: #5a6268; }
+
+/* Centrar formularios (POST) dentro del contenedor */
+.content form:not([method="get"]) {
+    max-width: 820px;   /* ya definido, reafirmamos */
+    margin: 16px auto;  /* centra horizontalmente */
+  }
+  
+  /* Opcional: centrar también el bloque de mensajes/alertas sobre el form */
+  .content ul,
+  .content .alert,
+  .content .alert-danger {
+    max-width: 820px;
+    margin-left: auto;
+    margin-right: auto;
+  } 

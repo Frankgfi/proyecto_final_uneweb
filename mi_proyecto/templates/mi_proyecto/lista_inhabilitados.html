@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Productos Inhabilitados{% endblock %}
+{% block content %}
+    <h1>Productos Inhabilitados</h1>
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Categoría</th>
+                <th>Proveedor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.codigo }}</td>
+                <td>{{ producto.descripcion }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>{{ producto.get_categoria_display }}</td>
+                <td>{{ producto.proveedor.nombre|default:"—" }}</td>
+                <td>
+                    <a href="{% url 'habilitar_producto' producto.id %}">Habilitar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8">No hay productos inhabilitados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'lista_productos' %}">Ver productos activos</a>
+{% endblock %}
