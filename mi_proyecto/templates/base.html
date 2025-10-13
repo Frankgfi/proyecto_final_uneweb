@@ -1,19 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Inventario{% endblock %}</title>
-    <style>
-        body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-        .main-container{display:flex;min-height:100vh}
-        .sidebar{width:240px;background:#0f172a;color:#e2e8f0;padding:20px 16px}
-        .sidebar h2{font-size:18px;margin:0 0 12px}
-        .filter-menu{display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
-        .filter-menu a{display:block;padding:8px 10px;border-radius:6px;color:#e2e8f0;text-decoration:none;background:#1e293b}
-        .filter-menu a:hover{background:#334155}
-        .content{flex:1;padding:20px}
-        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-    </style>
+    <link rel="stylesheet" href="{% static 'mi_proyecto/styles.css' %}">
     {% block head_extra %}{% endblock %}
 </head>
 <body>

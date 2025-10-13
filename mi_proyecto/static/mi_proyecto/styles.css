@@ -1,0 +1,103 @@
+
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+        .main-container{display:flex;min-height:100vh}
+        .sidebar{width:180px;background:#0f172a;color:#e2e8f0;padding:20px 16px}
+        .sidebar h2{font-size:18px;margin:0 0 12px}
+        .filter-menu{display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
+        .filter-menu a{display:block;padding:8px 10px;border-radius:6px;color:#e2e8f0;text-decoration:none;background:#1e293b}
+        .filter-menu a:hover{background:#334155}
+        .content{flex:1;padding:20px}
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+
+
+
+/* Contenedor principal */
+.content {
+    padding: 20px;
+  }
+  
+  /* Encabezado con botón a la derecha */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .header a {
+    background: #0f766e;
+    color: #eae8e8;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  .header a:hover { background: #115e59; }
+  
+  /* Filtros (formulario arriba de la tabla) */
+  .content form[method="get"] {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .content form[method="get"] input,
+  .content form[method="get"] select,
+  .content form[method="get"] button {
+    padding: 8px 10px;
+    border: 1px solid #000000;
+    border-radius: 6px;
+  }
+  .content form[method="get"] button {
+    background: #0ea5e9; color: #000000; border: none;
+  }
+  .content form[method="get"] button:hover { background: #0284c7; }
+  
+  /* Tabla base */
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden; /* bordes redondeados en la tabla */
+  }
+  
+  /* Encabezados */
+  .content thead th {
+    background: #8ca8e1;
+    color: #111827;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  /* Filas */
+  .content tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #040506;
+    color: #111827;
+  }
+  
+  /* Zebra */
+  .content tbody tr:nth-child(even) { background: #fafafa; }
+  
+  /* Hover fila */
+  .content tbody tr:hover { background: #f1f5f9; }
+  
+  /* Acciones */
+  .content td a {
+    color: #2563eb; text-decoration: none;
+  }
+  .content td a:hover { text-decoration: underline; }
+  
+  /* Paginación */
+  .pagination {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: 12px;
+  }
+  .pagination a {
+    padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+    text-decoration: none; color: #0f172a; background: #fff;
+  }
+  .pagination a:hover { background: #f8fafc; }
+  .pagination span { color: #475569; }
