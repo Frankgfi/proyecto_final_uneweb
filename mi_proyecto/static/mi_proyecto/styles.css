@@ -1,22 +1,56 @@
-
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-        .main-container{display:flex;min-height:100vh}
-        .sidebar{width:180px;background:#0f172a;color:#e2e8f0;padding:20px 16px}
-        .sidebar h2{font-size:18px;margin:0 0 12px}
-        .filter-menu{display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
-        .filter-menu a{display:block;padding:8px 10px;border-radius:6px;color:#e2e8f0;text-decoration:none;background:#1e293b}
-        .filter-menu a:hover{background:#334155}
-        .content{flex:1;padding:20px}
-        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-
-
-
-/* Contenedor principal */
-.content {
-    padding: 20px;
+/* Fondo y layout */
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    margin: 0;
+    color: #333;
+  }
+  .main-container { display: flex; min-height: 100vh; }
+  
+  /* Sidebar mejorado */
+  .sidebar {
+    background: rgba(26, 26, 46, 0.95);
+    width: 150px;
+    padding: 2rem;
+    color: #fff;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+  }
+  .sidebar h2 {
+    color: #fff;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  .filter-menu a {
+    display: block;
+    color: #fff;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: transparent;
+  }
+  .filter-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
   }
   
-  /* Encabezado con botón a la derecha */
+  /* Contenido con tarjeta y animación */
+  .content {
+    flex: 1;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 15px 0 0 15px;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.6s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Header y botón principal */
   .header {
     display: flex;
     align-items: center;
@@ -25,79 +59,104 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvet
   }
   .header a {
     background: #0f766e;
-    color: #eae8e8;
+    color: #fff;
     text-decoration: none;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 25px;
   }
   .header a:hover { background: #115e59; }
   
-  /* Filtros (formulario arriba de la tabla) */
+  /* Filtros arriba de la tabla */
   .content form[method="get"] {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
   }
   .content form[method="get"] input,
   .content form[method="get"] select,
   .content form[method="get"] button {
-    padding: 8px 10px;
-    border: 1px solid #000000;
-    border-radius: 6px;
+    padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px;
   }
-  .content form[method="get"] button {
-    background: #0ea5e9; color: #000000; border: none;
-  }
+  .content form[method="get"] button { background: #0ea5e9; color: #fff; border: none; }
   .content form[method="get"] button:hover { background: #0284c7; }
   
-  /* Tabla base */
+  /* Tabla estilo  */
   .content table {
     width: 100%;
     border-collapse: collapse;
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    overflow: hidden; /* bordes redondeados en la tabla */
+    overflow: hidden; /* bordes redondeados */
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
   }
-  
-  /* Encabezados */
   .content thead th {
-    background: #8ca8e1;
-    color: #111827;
+    background: #1a1a2e;
+    color: #fff;
     font-weight: 600;
     text-align: left;
-    padding: 10px 12px;
+    padding: 12px 15px;
     border-bottom: 1px solid #e5e7eb;
   }
-  
-  /* Filas */
   .content tbody td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #040506;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f5f9;
     color: #111827;
   }
+  .content tbody tr:nth-child(even) { background: #f8f9fa; }
+  .content tbody tr:hover { background: #f1f1f1; }
   
-  /* Zebra */
-  .content tbody tr:nth-child(even) { background: #fafafa; }
-  
-  /* Hover fila */
-  .content tbody tr:hover { background: #f1f5f9; }
-  
-  /* Acciones */
-  .content td a {
-    color: #2563eb; text-decoration: none;
+  /* Botones */
+  .btn-success {
+    background: #4CAF50; color: #fff; padding: 10px 20px; border-radius: 25px;
+    text-decoration: none; margin-bottom: 1rem; display: inline-block; transition: transform .3s ease;
   }
-  .content td a:hover { text-decoration: underline; }
+  .btn-success:hover { background: #45a049; transform: translateY(-2px); }
+  .btn-info {
+    background-color: #17a2b8; color: #fff; padding: 8px 16px; border-radius: 4px; text-decoration: none; transition: background-color .3s;
+  }
+  .btn-info:hover { background-color: #138496; color: #fff; }
+  
+  /* Grupo de botones/acciones */
+  .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-editar, .btn-eliminar {
+    padding: 6px 12px; border-radius: 15px; text-decoration: none; font-size: .85em;
+  }
+  .btn-editar { background: #2196F3; color: white; }
+  .btn-eliminar { background: #f44336; color: white; }
+  
+  /* Botones “Editar / Eliminar”*/
+  .content tbody td:last-child a {
+    display: inline-block; padding: 6px 10px; border-radius: 6px; text-decoration: none; color: #fff;
+    margin-right: 6px; font-size: 14px; line-height: 1;
+  }
+  .content tbody td:last-child a:first-child {
+    background: #0ea5e9; border: 1px solid #0284c7;
+  }
+  .content tbody td:last-child a:first-child:hover {
+    background: #0284c7;
+  }
+  .content tbody td:last-child a:last-child {
+    background: #ef4444; border: 1px solid #dc2626;
+  }
+  .content tbody td:last-child a:last-child:hover {
+    background: #dc2626;
+  }
+  
+  /* Alerta de stock bajo*/
+  .stock-alert {
+    background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px;
+    border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .alert-icon { font-size: 1.2em; }
+  .alert-text { font-weight: 500; }
+  .stock-indicator { display: flex; align-items: center; gap: 5px; }
+  .stock-warning, .text-danger { color: #dc3545; }
+  .text-success { color: #28a745; }
   
   /* Paginación */
-  .pagination {
-    display: flex; gap: 8px; align-items: center;
-    margin-top: 12px;
-  }
+  .pagination { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
   .pagination a {
-    padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
-    text-decoration: none; color: #0f172a; background: #fff;
+    padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; text-decoration: none;
+    color: #0f172a; background: #fff; transition: background .2s ease;
   }
   .pagination a:hover { background: #f8fafc; }
   .pagination span { color: #475569; }

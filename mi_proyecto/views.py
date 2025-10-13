@@ -55,14 +55,17 @@ def lista_productos(request):
         productos_paginados = paginator.page(1)
     except EmptyPage:
         productos_paginados = paginator.page(paginator.num_pages)
-    
-    context = {
+
+    low_stock_count = Productos.objects.filter(stock__lte=3).count()
+
+    return render(request, 'mi_proyecto/lista_productos.html', {
         'productos': productos_paginados,
         'categorias': Productos.CATEGORIAS,
         'categoria_actual': categoria_seleccionada,
         'busqueda': busqueda,
-    }
-    return render(request, 'mi_proyecto/lista_productos.html', context)
+        'low_stock_count': low_stock_count,
+    })
+
 
 def crear_producto(request):
     form = ProductoForm()

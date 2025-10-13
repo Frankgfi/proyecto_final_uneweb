@@ -20,6 +20,13 @@
         <button type="submit">Filtrar</button>
     </form>
 
+    {% if low_stock_count %}
+    <div class="stock-alert">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">Hay {{ low_stock_count }} producto(s) con stock bajo.</div>
+    </div>
+    {% endif %}
+
     <table border="1" cellpadding="6">
         <thead>
             <tr>
@@ -41,7 +48,14 @@
                 <td>{{ producto.descripcion }}</td>
                 <td>{{ producto.get_categoria_display }}</td>
                 <td>${{ producto.precio }}</td>
-                <td>{{ producto.stock }}</td>
+                <td class="text-center nowrap">
+                {% if producto.stock <= 3 %}
+                    <span class="text-danger">{{ producto.stock }}</span> <span class="stock-warning">(Bajo)</span>
+                {% else %}
+                    {{ producto.stock }}
+                {% endif %}
+                </td>
+</td>
                 <td>{{ producto.proveedor.nombre|default:"—" }}</td>
                 <td>
                     <a href="{% url 'editar_producto' producto.id %}">Editar</a> |
