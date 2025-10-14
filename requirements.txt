@@ -1,9 +1,8 @@
 Django==4.2.24
-mysqlclient==2.2.7
-openpyxl==3.1.5
-Pillow==11.3.0
-reportlab==4.4.4
-psycopg2==2.9.7
 gunicorn==21.2.0
 whitenoise==6.6.0
 dj-database-url==2.1.0
+psycopg2-binary==2.9.9
+openpyxl==3.1.5
+Pillow==11.3.0
+reportlab==4.4.4
