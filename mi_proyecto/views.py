@@ -12,22 +12,7 @@ from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
-def inicio(request):
-    # Estadísticas de productos
-    total_productos = len(Productos.objects.all())
-    total_proveedores = len(Proveedor.objects.all())
-    productos_bajo_stock = len(Productos.objects.filter(stock__lt=5))
-    
-    # Productos recientes
-    productos_recientes = Productos.objects.order_by('-fecha_ingreso')[:5]
-    
-    context = {
-        'total_productos': total_productos,
-        'total_proveedores': total_proveedores,
-        'productos_bajo_stock': productos_bajo_stock,
-        'productos_recientes': productos_recientes,
-    }
-    return render(request, 'mi_proyecto/inicio.html', context)
+
 
 def lista_productos(request):
     categoria_actual = request.GET.get('categoria', 'todos')
