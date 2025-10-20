@@ -1,8 +1,10 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('', views.lista_productos, name='lista_productos'),
+    path('', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('inicio/', views.lista_productos, name='lista_productos'),
     path('productos/', views.lista_productos, name='lista_productos'),
     path('productos/crear/', views.crear_producto, name='crear_producto'),
     path('productos/editar/<int:id>/', views.editar_producto, name='editar_producto'),
@@ -23,6 +25,11 @@ urlpatterns = [
     path('salidas/registrar/', views.registrar_salida, name='registrar_salidas'),
 
     path('salidas/<int:id>/pdf/', views.generar_pdf_salida, name='generar_pdf_salida'),
+    
+    # Autenticación
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('accounts/register/', views.registrar_usuario, name='register'),
     
     path('productos/deshabilitar/<int:id>/', views.deshabilitar_producto, name='deshabilitar_producto'),
     path('productos/habilitar/<int:id>/', views.habilitar_producto, name='habilitar_producto'),

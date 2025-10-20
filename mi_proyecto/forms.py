@@ -1,5 +1,6 @@
 from django import forms
-from .models import Productos, Proveedor, SalidaProducto
+from django.contrib.auth.models import User
+from .models import Productos, Proveedor, SalidaProducto, UserProfile
 
 
 class ProductoForm(forms.ModelForm):
@@ -47,4 +48,52 @@ class ImportarExcelForm(forms.Form):
         help_text='Seleccione el archivo Excel con los productos a importar',
         widget=forms.FileInput(attrs={'accept': '.xlsx,.xls'})
     )
+
+
+class RegistroUsuarioForm(forms.ModelForm):
+    first_name = forms.CharField(label='Nombre', max_length=150)
+    last_name = forms.CharField(label='Apellido', max_length=150)
+    email = forms.EmailField(label='Correo')
+    telefono = forms.CharField(label='Teléfono (opcional)', max_length=20, required=False)
+    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+    password_confirm = forms.CharField(label='Confirmar contraseña', widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+        labels = {
+            'username': 'Usuario',
+        }
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('El nombre de usuario ya existe')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('El correo ya está registrado')
+        return email
+
+    def clean(self):
+        cleaned = super().clean()
+        password = cleaned.get('password')
+        password_confirm = cleaned.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            self.add_error('password_confirm', 'Las contraseñas no coinciden')
+        return cleaned
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+            UserProfile.objects.create(
+                user=user,
+                telefono=self.cleaned_data.get('telefono', '')
+            )
+        return user
 

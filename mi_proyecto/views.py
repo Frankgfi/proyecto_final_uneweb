@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Productos, Proveedor, SalidaProducto, HistorialMovimiento
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
+from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm, ImportarExcelForm
+from .forms import RegistroUsuarioForm
 from django.forms import formset_factory
 from django.contrib import messages
-from .forms import ProductoForm, MultipleProductosForm, ProveedorForm, SalidaProductoForm, ImportarExcelForm
 from decimal import Decimal
 from openpyxl import load_workbook
 from io import BytesIO
@@ -14,6 +17,7 @@ from reportlab.lib.pagesizes import letter
 
 
 
+@login_required
 def lista_productos(request):
     categoria_actual = request.GET.get('categoria', 'todos')
     busqueda = request.GET.get('busqueda', '')
@@ -50,6 +54,7 @@ def lista_productos(request):
         'low_stock_count': low_stock_count,
     })
 
+@login_required
 def crear_producto(request):
     form = ProductoForm()
     form_multiple = MultipleProductosForm()
@@ -117,6 +122,7 @@ def crear_producto(request):
         'formset': formset
     })
 
+@login_required
 def editar_producto(request, id):
     producto = get_object_or_404(Productos, id=id)
     if request.method == 'POST':
@@ -142,6 +148,7 @@ def editar_producto(request, id):
         form = ProductoForm(instance=producto)
     return render(request, 'mi_proyecto/editar_producto.html', {'form': form, 'producto': producto})
 
+@login_required
 def eliminar_producto(request, id):
     producto = get_object_or_404(Productos, id=id)
     if request.method == 'POST':
@@ -163,6 +170,7 @@ def eliminar_producto(request, id):
         return redirect('lista_productos')
     return render(request, 'mi_proyecto/eliminar_producto.html', {'producto': producto}) 
 
+@login_required
 def deshabilitar_producto(request, id):
     producto = get_object_or_404(Productos, id=id)
     if request.method == 'POST':
@@ -180,6 +188,7 @@ def deshabilitar_producto(request, id):
         messages.success(request, f'Producto "{producto.nombre}" deshabilitado.')
         return redirect('lista_productos')
     return render(request, 'mi_proyecto/deshabilitar_producto.html', {'producto': producto})
+@login_required
 def productos_inhabilitados(request):
     page = request.GET.get('page', 1)
     items_per_page = 10
@@ -197,6 +206,7 @@ def productos_inhabilitados(request):
         'productos': productos_paginados,
     })
 
+@login_required
 def habilitar_producto(request, id):
     producto = get_object_or_404(Productos, id=id)
     if request.method == 'POST':
@@ -217,6 +227,7 @@ def habilitar_producto(request, id):
 
 # Proveedor #####################################################
 
+@login_required
 def lista_proveedores(request):
     page = request.GET.get('page', 1)
     items_per_page = 10
@@ -234,6 +245,7 @@ def lista_proveedores(request):
         'proveedores': proveedores
     })
 
+@login_required
 def crear_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -245,6 +257,7 @@ def crear_proveedor(request):
     return render(request, 'mi_proyecto/proveedor/crear_proveedor.html', {'form': form})
 
 
+@login_required
 def editar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     if request.method == 'POST':
@@ -259,6 +272,7 @@ def editar_proveedor(request, id):
         'proveedor': proveedor
     })
 
+@login_required
 def eliminar_proveedor(request, id):
     proveedor = get_object_or_404(Proveedor, id=id)
     if request.method == 'POST':
@@ -269,6 +283,7 @@ def eliminar_proveedor(request, id):
 
 #Historial de movimientos #####################################################
 
+@login_required
 def historial_movimientos(request):
     categoria_seleccionada = request.GET.get('categoria', 'todos')
     page = request.GET.get('page', 1)
@@ -293,6 +308,7 @@ def historial_movimientos(request):
     })
 
 
+@login_required
 def lista_salidas(request):
     page = request.GET.get('page', 1)
     items_per_page = 15
@@ -311,6 +327,7 @@ def lista_salidas(request):
         'salidas': salidas
     })
 
+@login_required
 def registrar_salida(request):
     if request.method == 'POST':
         form = SalidaProductoForm(request.POST)
@@ -328,6 +345,7 @@ def registrar_salida(request):
     
     return render(request, 'mi_proyecto/salidas/registrar_salidas.html', {'form': form})
 
+@login_required
 def importar_excel(request):
     if request.method == 'POST':
         form = ImportarExcelForm(request.POST, request.FILES)
@@ -458,6 +476,7 @@ def importar_excel(request):
     return render(request, 'mi_proyecto/importar_excel.html', {'form': form})
 
 
+@login_required
 def generar_pdf_salida(request, id):
     salida = get_object_or_404(SalidaProducto, id=id)
 
@@ -511,3 +530,16 @@ def generar_pdf_salida(request, id):
     response = HttpResponse(buffer, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="salida_{salida.id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
     return response
+
+
+def registrar_usuario(request):
+    if request.method == 'POST':
+        form = RegistroUsuarioForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Usuario registrado y sesión iniciada correctamente.')
+            return redirect('lista_productos')
+    else:
+        form = RegistroUsuarioForm()
+    return render(request, 'mi_proyecto/register.html', {'form': form})
